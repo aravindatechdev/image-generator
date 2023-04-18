@@ -1,0 +1,15 @@
+### Chat GPT Suggestions
+GET http://localhost:7071/api/getChatGPTSuggestion HTTP/1.1
+
+### Blob SAS Token
+
+GET http://localhost:7071/api/generateSASToken HTTP/1.1
+
+### Image Generator
+
+POST http://localhost:7071/api/generateImage HTTP/1.1
+content-type: application/json
+
+{
+    "prompt": "Create a modern abstract oil painting of a garden in full bloom with vibrant colors."
+}
