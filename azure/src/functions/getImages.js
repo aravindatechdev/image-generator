@@ -32,19 +32,19 @@ app.http("getImages", {
         for await (const blob of containerClient.listBlobsFlat()) {
             const imageUrl = `${blob.name}?${sasToken}`;
             const url = `https://${accountName}.blob.core.windows.net/images/${imageUrl}`;
-            imageUrls.push({url, name:blob.name});
+            imageUrls.push({ url, name: blob.name });
         }
 
-        const sortedImageUrls = imageUrls.sort((a,b) => {
+        const sortedImageUrls = imageUrls.sort((a, b) => {
             const aName = a.name.split("_").pop().toString().split(".").shift();
             const bName = b.name.split("_").pop().toString().split(".").shift();
-            return bName-aName;
-        })
-        
+            return bName - aName;
+        });
+
         return {
             jsonBody: {
                 imageUrls: sortedImageUrls,
             }
-        }
+        };
     }
 });

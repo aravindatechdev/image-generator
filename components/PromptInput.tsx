@@ -1,8 +1,10 @@
 
 'use client';
 
+import fetchImages from "@/lib/fetchImages";
 import fetchSuggestionFromChatGPT from "@/lib/fetchSuggestionFromChatGPT";
 import { FormEvent, useState } from "react";
+import { toast } from "react-hot-toast";
 import useSWR from 'swr';
 
 function PromptInput() {
@@ -25,7 +27,16 @@ function PromptInput() {
 
         console.log(inputPrompt);
 
+
+
         const p = useSuggestion ? suggestion : inputPrompt;
+
+        const notificationPrompt = p;
+        const notificationPromptShort = notificationPrompt.slice(0, 20);
+
+        const notification = toast.loading(
+            `AI Image Generation in Progress: ${notificationPromptShort}...`
+        );
 
         const res = await fetch('/api/generateImage', {
             method: 'POST',
@@ -35,14 +46,31 @@ function PromptInput() {
             body: JSON.stringify({ prompt: p })
         });
         const data = await res.json();
+
+        if (data.error) {
+            toast.error(data.error, {
+                id: notification
+            });
+        }
+        else {
+            toast.success(`Your AI Image has been Generated`, {
+                id: notification
+            });
+        }
+
+        updateImages();
     };
 
+    const { mutate: updateImages } = useSWR
+        ("images", fetchImages, {
+            revalidateOnFocus: false
+        });
     return (
         <div className="m-10">
             <form className="flex flex-col md:flex-row shadow-md shadow-slate-400/10 border rounded-md md:divide-x" onSubmit={handlePrompt}>
                 <textarea className="flex-1 p-4 outline-none rounded-md" placeholder={(loading && "Chat GPT thinking of a suggestion...") || suggestion || "Enter a Prompt"} value={input} onChange={(e) => setInput(e.target.value)} />
                 <button type="submit" className={`p-4 font-bold ${input ? 'bg-violet-500 text-white transition-colors duration-200' : 'text-gray-300 cursor-not-allowed'}`} disabled={!input}>Generate</button>
-                <button type="button" name="user_suggestion"  className="p-4 bg-violet-400 text-white transition-colors duration-200 font-bold disabled:text-gray-300 disabled:cursor-not-allowed disabled:bg-gray-400" onClick={() => submitPrompt(true)}>Use Suggestion</button>
+                <button type="button" name="user_suggestion" className="p-4 bg-violet-400 text-white transition-colors duration-200 font-bold disabled:text-gray-300 disabled:cursor-not-allowed disabled:bg-gray-400" onClick={() => submitPrompt(true)}>Use Suggestion</button>
                 <button type="button" name="suggestion" className="p-4 bg-white text-violet-500 border-none transition-colors duration-200 rounded-b-md md:rounded-r-md md:rounded-bl-none font-bold" onClick={mutate}>New Suggestion</button>
 
             </form>

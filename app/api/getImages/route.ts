@@ -1,19 +1,20 @@
 import { NextResponse } from "next/server";
 
-export async function POST(request: Request) {
-    const res = await request.json();
-    const prompt = res.prompt;
-    //Connect Azure function endpoint
-    const response = await fetch("/api/generateImage", {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({prompt})    
-     
-    })
-    
-    const textData = await response.text();
+export async function GET(request: Request) {
+  const response = await fetch(
+    "https://ai-image-generator-123.azurewebsites.net/api/getimages",
+    {
+      cache: "no-store",
+    }
+  );
+  const blob = await response.blob();
+  const textData = await blob.text();
 
-  return NextResponse.json(textData);
+  const data = JSON.parse(textData);
+
+  return new Response(JSON.stringify(data), {
+    status: 200,
+  });
+
+  // return NextResponse.json(textData);
 }

@@ -4,8 +4,8 @@ const nextConfig = {
     appDir: true,
   },
   images: {
-    domains: ["links.papareact.com"]
+    domains: ["seeklogo.com", "aiimagegenerator12b915e8.blob.core.windows.net"]
   }
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;
